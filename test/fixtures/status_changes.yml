@@ -1,0 +1,10 @@
+globex_applied:
+  job_application: globex
+  to_status: applied
+  created_at: <%= 10.days.ago.to_fs(:db) %>
+
+globex_interview:
+  job_application: globex
+  from_status: applied
+  to_status: interview
+  created_at: <%= 2.days.ago.to_fs(:db) %>

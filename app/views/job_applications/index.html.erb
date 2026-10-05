@@ -1,0 +1,55 @@
+<% content_for :title, "Applications" %>
+
+<div class="page-header">
+  <h1>Applications</h1>
+  <div class="actions">
+    <%= link_to "⬇ Export CSV", job_applications_path(format: :csv, q: params[:q], status: params[:status]),
+                class: "btn btn--ghost", data: { turbo: false } %>
+    <%= link_to "+ New application", new_job_application_path, class: "btn" %>
+  </div>
+</div>
+
+<%= form_with url: job_applications_path, method: :get, class: "filters" do |f| %>
+  <%= f.search_field :q, value: params[:q], placeholder: "Search by company or position" %>
+  <%= f.select :status, status_options, { include_blank: "All statuses", selected: params[:status] } %>
+  <%= f.submit "Search", name: nil, class: "btn" %>
+<% end %>
+
+<div class="card table-wrap">
+  <% if @job_applications.any? %>
+    <table>
+      <thead>
+        <tr>
+          <th>Company &amp; position</th>
+          <th>Status</th>
+          <th>Salary</th>
+          <th>Applied</th>
+          <th>Next step</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @job_applications.each do |application| %>
+          <tr>
+            <td class="cell-title">
+              <%= link_to application.company, application %><br>
+              <span class="muted"><%= application.position %></span>
+            </td>
+            <td><%= status_badge(application.status) %></td>
+            <td><%= salary_range(application) %></td>
+            <td><%= short_date(application.applied_on) %></td>
+            <td>
+              <% if application.next_step_on %>
+                <span class="<%= "overdue" if application.overdue? %>"><%= short_date(application.next_step_on) %></span>
+                <span class="muted"><%= application.next_step %></span>
+              <% else %>
+                —
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="empty">No applications found. <%= link_to "Add one", new_job_application_path %></p>
+  <% end %>
+</div>

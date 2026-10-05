@@ -1,0 +1,24 @@
+<% content_for :title, "Sign in" %>
+
+<div class="auth">
+  <h1>Sign in to OfferPath</h1>
+
+  <div class="card">
+    <%= form_with url: session_path, class: "form" do |f| %>
+      <div class="field">
+        <%= f.label :email_address, "Email" %>
+        <%= f.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
+                          value: params[:email_address] %>
+      </div>
+
+      <div class="field">
+        <%= f.label :password, "Password" %>
+        <%= f.password_field :password, required: true, autocomplete: "current-password", maxlength: 72 %>
+      </div>
+
+      <%= f.submit "Sign in", class: "btn" %>
+    <% end %>
+  </div>
+
+  <p class="auth__footer">Don't have an account? <%= link_to "Sign up", new_registration_path %></p>
+</div>

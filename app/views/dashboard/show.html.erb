@@ -1,0 +1,79 @@
+<% content_for :title, "Dashboard" %>
+
+<div class="page-header">
+  <h1>My job search</h1>
+  <%= link_to "+ New application", new_job_application_path, class: "btn" %>
+</div>
+
+<div class="grid grid--stats">
+  <div class="card">
+    <div class="stat__label">Jobs tracked</div>
+    <div class="stat__value"><%= @stats.total %></div>
+    <div class="stat__hint">including wishlist</div>
+  </div>
+  <div class="card">
+    <div class="stat__label">Applications sent</div>
+    <div class="stat__value"><%= @stats.submitted %></div>
+    <div class="stat__hint">this week: <%= @stats.applied_this_week %></div>
+  </div>
+  <div class="card">
+    <div class="stat__label">Interview rate</div>
+    <div class="stat__value"><%= @stats.response_rate %>%</div>
+    <div class="stat__hint"><%= @stats.responded %> of <%= @stats.submitted %> reached an interview</div>
+  </div>
+  <div class="card">
+    <div class="stat__label">Offers</div>
+    <div class="stat__value"><%= @stats.offers %></div>
+    <div class="stat__hint"><%= @stats.offers.positive? ? "🎉 congrats!" : "keep going" %></div>
+  </div>
+</div>
+
+<div class="grid grid--2">
+  <section class="card">
+    <h2>Pipeline</h2>
+    <% JobApplication::STATUSES.each do |status| %>
+      <div class="funnel__row">
+        <span><%= JobApplication.human_status(status) %></span>
+        <div class="funnel__track">
+          <div class="funnel__bar funnel__bar--<%= status %>" style="width: <%= @stats.share(status) %>%"></div>
+        </div>
+        <span class="funnel__count"><%= @stats.counts_by_status[status] %></span>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="card">
+    <h2>📅 Upcoming steps</h2>
+    <% if @next_steps.any? %>
+      <ul class="list">
+        <% @next_steps.each do |application| %>
+          <li>
+            <span>
+              <%= link_to application.company, application %> — <%= application.next_step.presence || "no details" %>
+            </span>
+            <span class="<%= "overdue" if application.overdue? %>"><%= short_date(application.next_step_on) %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="empty">Nothing scheduled yet</p>
+    <% end %>
+  </section>
+
+  <section class="card">
+    <h2>⏰ Waiting too long</h2>
+    <p class="muted">No movement for over <%= JobApplication::STALE_AFTER.in_days.to_i %> days — a good time to send a follow-up.</p>
+    <% if @stale.any? %>
+      <ul class="list">
+        <% @stale.each do |application| %>
+          <li>
+            <span><%= link_to application.company, application %> — <%= application.position %></span>
+            <span class="muted"><%= time_ago_in_words(application.status_changed_at) %> ago</span>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="empty">Everything is on track 👌</p>
+    <% end %>
+  </section>
+</div>

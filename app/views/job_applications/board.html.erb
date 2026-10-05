@@ -1,0 +1,46 @@
+<% content_for :title, "Board" %>
+
+<div class="page-header">
+  <h1>Board</h1>
+  <%= link_to "+ New application", new_job_application_path, class: "btn" %>
+</div>
+
+<div class="board">
+  <% JobApplication::STATUSES.each do |status| %>
+    <% cards = @columns.fetch(status, []) %>
+    <section class="board__column">
+      <div class="board__header">
+        <%= status_badge(status) %>
+        <span class="muted"><%= cards.size %></span>
+      </div>
+
+      <% cards.each do |application| %>
+        <article class="board__card">
+          <h3><%= link_to application.company, application %></h3>
+          <p class="board__meta">
+            <%= application.position %><br>
+            <%= salary_range(application) %>
+            <% if application.next_step_on %>
+              <br><span class="<%= "overdue" if application.overdue? %>">📅 <%= short_date(application.next_step_on) %></span>
+            <% end %>
+          </p>
+
+          <div class="board__actions">
+            <% if (next_status = application.next_status) %>
+              <%= button_to "→ #{JobApplication.human_status(next_status)}", move_job_application_path(application),
+                            method: :patch, params: { status: next_status }, class: "btn btn--small" %>
+            <% end %>
+            <% unless application.closed? %>
+              <%= button_to "Reject", move_job_application_path(application),
+                            method: :patch, params: { status: "rejected" }, class: "btn btn--small btn--danger" %>
+            <% end %>
+          </div>
+        </article>
+      <% end %>
+
+      <% if status == "wishlist" %>
+        <%= link_to "+ Add", new_job_application_path(status: status), class: "btn btn--small btn--ghost" %>
+      <% end %>
+    </section>
+  <% end %>
+</div>

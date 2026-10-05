@@ -1,0 +1,31 @@
+<% content_for :title, "Sign up" %>
+
+<div class="auth">
+  <h1>Create your account</h1>
+
+  <div class="card">
+    <%= form_with model: @user, url: registration_path, class: "form" do |f| %>
+      <%= render "shared/errors", record: @user %>
+
+      <div class="field">
+        <%= f.label :email_address %>
+        <%= f.email_field :email_address, required: true, autofocus: true, autocomplete: "username" %>
+      </div>
+
+      <div class="field">
+        <%= f.label :password %>
+        <%= f.password_field :password, required: true, minlength: 8, maxlength: 72, autocomplete: "new-password",
+                             placeholder: "At least 8 characters" %>
+      </div>
+
+      <div class="field">
+        <%= f.label :password_confirmation %>
+        <%= f.password_field :password_confirmation, required: true, autocomplete: "new-password" %>
+      </div>
+
+      <%= f.submit "Create account", class: "btn" %>
+    <% end %>
+  </div>
+
+  <p class="auth__footer">Already have an account? <%= link_to "Sign in", new_session_path %></p>
+</div>

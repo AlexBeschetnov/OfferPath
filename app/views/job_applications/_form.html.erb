@@ -1,0 +1,62 @@
+<%= form_with model: job_application, class: "form card" do |f| %>
+  <%= render "shared/errors", record: job_application %>
+
+  <div class="form__row">
+    <div class="field">
+      <%= f.label :company %>
+      <%= f.text_field :company, required: true, autofocus: true %>
+    </div>
+    <div class="field">
+      <%= f.label :position %>
+      <%= f.text_field :position, required: true %>
+    </div>
+  </div>
+
+  <div class="form__row">
+    <div class="field">
+      <%= f.label :status %>
+      <%= f.select :status, status_options %>
+    </div>
+    <div class="field">
+      <%= f.label :applied_on %>
+      <%= f.date_field :applied_on %>
+    </div>
+  </div>
+
+  <div class="form__row">
+    <div class="field">
+      <%= f.label :salary_from, "Salary from (USD / year)" %>
+      <%= f.number_field :salary_from, min: 1, step: 1000, placeholder: "e.g. 90000" %>
+    </div>
+    <div class="field">
+      <%= f.label :salary_to, "Salary to (USD / year)" %>
+      <%= f.number_field :salary_to, min: 1, step: 1000, placeholder: "e.g. 120000" %>
+    </div>
+  </div>
+
+  <div class="field">
+    <%= f.label :posting_url %>
+    <%= f.url_field :posting_url, placeholder: "https://www.linkedin.com/jobs/view/..." %>
+  </div>
+
+  <div class="form__row">
+    <div class="field">
+      <%= f.label :next_step %>
+      <%= f.text_field :next_step, placeholder: "Technical interview, take-home assignment…" %>
+    </div>
+    <div class="field">
+      <%= f.label :next_step_on %>
+      <%= f.date_field :next_step_on %>
+    </div>
+  </div>
+
+  <div class="field">
+    <%= f.label :notes %>
+    <%= f.text_area :notes, rows: 5, placeholder: "Recruiter contacts, interview questions, impressions…" %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Save", class: "btn" %>
+    <%= link_to "Cancel", job_application.persisted? ? job_application : job_applications_path, class: "btn btn--ghost" %>
+  </div>
+<% end %>

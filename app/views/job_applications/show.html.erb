@@ -1,0 +1,67 @@
+<% content_for :title, @job_application.company %>
+
+<div class="page-header">
+  <div>
+    <h1><%= @job_application.company %></h1>
+    <span class="muted"><%= @job_application.position %></span>
+    <%= status_badge(@job_application.status) %>
+  </div>
+  <div class="actions">
+    <%= link_to "Edit", edit_job_application_path(@job_application), class: "btn btn--ghost" %>
+    <%= button_to "Delete", @job_application, method: :delete, class: "btn btn--danger",
+                  form: { data: { turbo_confirm: "Delete your application to #{@job_application.company}?" } } %>
+  </div>
+</div>
+
+<div class="grid grid--2">
+  <section class="card">
+    <h2>Details</h2>
+    <dl class="details">
+      <dt>Salary</dt>
+      <dd><%= salary_range(@job_application) %></dd>
+
+      <dt>Applied on</dt>
+      <dd><%= short_date(@job_application.applied_on) %></dd>
+
+      <dt>Next step</dt>
+      <dd>
+        <% if @job_application.next_step.present? || @job_application.next_step_on %>
+          <%= @job_application.next_step %>
+          <span class="<%= "overdue" if @job_application.overdue? %>"><%= short_date(@job_application.next_step_on) %></span>
+        <% else %>
+          —
+        <% end %>
+      </dd>
+
+      <dt>Job posting</dt>
+      <dd>
+        <% if @job_application.posting_url.present? %>
+          <%= link_to "Open ↗", @job_application.posting_url, target: "_blank", rel: "noopener" %>
+        <% else %>
+          —
+        <% end %>
+      </dd>
+    </dl>
+
+    <% if @job_application.notes.present? %>
+      <h2 style="margin-top: 20px">Notes</h2>
+      <%= simple_format @job_application.notes %>
+    <% end %>
+  </section>
+
+  <section class="card">
+    <h2>History</h2>
+    <ol class="timeline">
+      <% @status_changes.each do |change| %>
+        <li>
+          <% if change.from_status %>
+            <%= JobApplication.human_status(change.from_status) %> → <strong><%= JobApplication.human_status(change.to_status) %></strong>
+          <% else %>
+            Added as <strong><%= JobApplication.human_status(change.to_status) %></strong>
+          <% end %>
+          <div class="muted"><%= l(change.created_at, format: :short) %></div>
+        </li>
+      <% end %>
+    </ol>
+  </section>
+</div>
