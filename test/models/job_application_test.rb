@@ -68,6 +68,28 @@ class JobApplicationTest < ActiveSupport::TestCase
     assert_not_includes stale, job_applications(:globex)
   end
 
+  test "stale scope includes interviews without movement for two weeks" do
+    job_applications(:globex).update_columns(status_changed_at: 15.days.ago)
+
+    assert_includes @user.job_applications.stale, job_applications(:globex)
+  end
+
+  test "stale scope ignores applications moved less than two weeks ago" do
+    job_applications(:acme).update_columns(status_changed_at: 13.days.ago)
+
+    assert_not_includes @user.job_applications.stale, job_applications(:acme)
+  end
+
+  test "stale scope ignores wishlist and closed applications" do
+    job_applications(:initech).update_columns(status_changed_at: 30.days.ago)
+    job_applications(:globex).update_columns(status: "offer", status_changed_at: 30.days.ago)
+
+    stale = @user.job_applications.stale
+
+    assert_not_includes stale, job_applications(:initech)
+    assert_not_includes stale, job_applications(:globex)
+  end
+
   test "search matches company and position" do
     assert_equal [job_applications(:globex)], @user.job_applications.search("glob").to_a
     assert_equal [job_applications(:acme)], @user.job_applications.search("junior").to_a

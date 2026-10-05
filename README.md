@@ -15,7 +15,7 @@ move it through a hiring pipeline, see your conversion stats, and get nudged whe
   - pipeline breakdown by status;
   - application-to-interview conversion rate;
   - upcoming steps, with overdue ones highlighted;
-  - applications with no movement for 14+ days, so you know when to send a follow-up.
+  - applied or interviewing applications with no movement for 14+ days, so you know when to send a follow-up.
 - **Search and filters** by company, position, and status.
 - **CSV export** that opens correctly in Excel (UTF-8 with BOM).
 

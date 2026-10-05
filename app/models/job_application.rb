@@ -4,6 +4,7 @@ class JobApplication < ApplicationRecord
   STATUSES = %w[wishlist applied interview offer rejected].freeze
   PIPELINE = %w[wishlist applied interview offer].freeze
   STALE_AFTER = 14.days
+  AWAITING_RESPONSE = %w[applied interview].freeze
   CSV_COLUMNS = %i[company position status salary_from salary_to applied_on next_step next_step_on posting_url notes].freeze
 
   belongs_to :user
@@ -24,7 +25,7 @@ class JobApplication < ApplicationRecord
 
   scope :recent, -> { order(updated_at: :desc) }
   scope :pending, -> { where(status: %w[wishlist applied interview]) }
-  scope :stale, -> { applied.where(status_changed_at: ...STALE_AFTER.ago) }
+  scope :stale, -> { where(status: AWAITING_RESPONSE, status_changed_at: ...STALE_AFTER.ago) }
   scope :with_next_step, -> { not_rejected.where.not(next_step_on: nil).order(:next_step_on) }
   scope :search, ->(query) {
     if query.present?
